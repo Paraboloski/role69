@@ -12,6 +12,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+    
+    defaults:
+      run:
+        working-directory: ./sheet
 
     steps:
       - name: Checkout del codice
