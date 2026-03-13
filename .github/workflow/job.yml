@@ -1,9 +1,9 @@
-name: Build Electron App
+name: Build App
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -23,14 +23,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install
+      - name: Install dependencies
         run: npm install
 
-      - name: Build
+      - name: Build app
         run: npm run build
 
-      - name: Upload build
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: SchedaDnD-${{ matrix.os }}
+          name: build-${{ matrix.os }}
           path: dist/
