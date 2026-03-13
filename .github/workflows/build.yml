@@ -27,7 +27,7 @@ jobs:
           node-version: 20
 
       - name: Installa le dipendenze
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build React App
         run: npm run build
