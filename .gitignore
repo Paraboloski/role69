@@ -1,2 +1,3 @@
-node_modules/
-pkg/dist/
+sheet/node_modules/
+sheet/release/
+sheet/dist/

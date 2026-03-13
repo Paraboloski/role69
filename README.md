@@ -5,7 +5,7 @@ Applicazione desktop standalone per la gestione della scheda del personaggio di 
 ## Installazione
 
 1. Naviga nella sezione **Releases** sul lato destro di questa repository.
-2. Scarica l'ultima versione del file eseguibile (`.exe`).
+2. Scarica l'ultima versione del file eseguibile (`.exe` / `.dmg` / `appImage`).
 3. Avvia l'installazione tramite doppio clic. 
 
 ## Gestione dei Salvataggi
