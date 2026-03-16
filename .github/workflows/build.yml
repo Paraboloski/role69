@@ -43,8 +43,8 @@ jobs:
         shell: bash
         run: |
           tag="${GITHUB_REF_NAME}"
-          shopt -s nullglob
-          files=(release/**/*Setup*.exe release/**/*.dmg release/**/*.AppImage)
+          shopt -s nullglob globstar
+          files=(release/*Setup*.exe release/*.dmg release/*.AppImage release/**/*Setup*.exe release/**/*.dmg release/**/*.AppImage)
           files=($(printf "%s\n" "${files[@]}" | grep -vE 'builder-debug\.yml|latest-.*\.yml'))
           if [ ${#files[@]} -eq 0 ]; then
             echo "No assets found."
