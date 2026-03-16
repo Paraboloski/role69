@@ -17,39 +17,24 @@
     "commit": "bash ./git.sh"
   },
   "build": {
-    "appId": "com.ver.dndsheet",
     "productName": "Scheda D&D",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "dist/**/*",
-      "src/main.cjs"
-    ],
     "publish": [
       {
         "provider": "github",
-        "owner": "Paraboloski",
-        "repo": "asgaroth_d-d_sheet_apk",
-        "releaseType": "release"
+        "releaseType": "onTagOrDraft" 
       }
     ],
     "win": {
       "target": "nsis",
-      "artifactName": "${productName}-Setup-${version}.${ext}"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "artifactName": "Scheda-DnD-Setup-${version}.${ext}"
     },
     "mac": {
       "target": "dmg",
-      "artifactName": "${productName}-${version}.${ext}"
+      "artifactName": "Scheda-DnD-${version}.${ext}"
     },
     "linux": {
       "target": "AppImage",
-      "artifactName": "${productName}-${version}.${ext}"
+      "artifactName": "Scheda-DnD-${version}.${ext}"
     }
   },
   "dependencies": {
