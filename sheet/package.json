@@ -31,7 +31,7 @@
         "provider": "github",
         "owner": "Paraboloski",
         "repo": "asgaroth_d-d_sheet_apk",
-        "releaseType": "draft"
+        "releaseType": "release"
       }
     ],
     "win": {
