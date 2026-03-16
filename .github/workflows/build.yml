@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build & Release
 
 on:
   push:
@@ -9,16 +9,16 @@ permissions:
   contents: write
 
 jobs:
-  prepare:
+  cleanup:
     runs-on: ubuntu-latest
     steps:
-      - name: Elimina vecchia release (aggira blocco 2 ore)
+      - name: delete old release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release delete ${{ github.ref_name }} --yes || true
 
   release:
-    needs: prepare
+    needs: cleanup
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
