@@ -1,46 +1,23 @@
 name: Build
 
-env:
-  NODE_VERSION: 24
-
 on:
   push:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: 24
+
 jobs:
-  release:
-    runs-on: ${{ matrix.os }}
+  cleanup:
+    runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-
-    defaults:
-      run:
-        working-directory: ./sheet
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Dependency Init
-        run: npm install --legacy-peer-deps
-
-      - name: npm React
-        run: npm run build
-
-      - name: npm Electron
-        run: npx electron-builder --publish=never
-
-      - name: Clean release assets
+      - name: Cleanup release assets
         shell: bash
         run: |
           tag="${GITHUB_REF_NAME}"
@@ -51,41 +28,49 @@ jobs:
             done <<< "$assets"
           fi
 
-      - name: Upload assets (Windows)
+  release:
+    runs-on: ${{ matrix.os }}
+    needs: cleanup
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    defaults:
+      run:
+        working-directory: ./sheet
+
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{env.NODE_VERSION}}
+
+      - name: Installa le dipendenze
+        run: npm install --legacy-peer-deps
+
+      - name: npm React
+        run: npm run build
+
+      - name: npm Electron
+        run: npx electron-builder --publish never
+
+      - name: Upload Windows Setup
         if: matrix.os == 'windows-latest'
         shell: bash
-        run: |
-          tag="${GITHUB_REF_NAME}"
-          shopt -s nullglob
-          files=(sheet/release/**/*Setup*.exe)
-          if [ ${#files[@]} -gt 0 ]; then
-            gh release upload "$tag" "${files[@]}" --clobber
-          else
-            echo "No Windows setup exe found, skipping upload."
-          fi
+        run: gh release upload "${GITHUB_REF_NAME}" release/**/*Setup*.exe --clobber
 
-      - name: Upload assets (macOS)
+      - name: Upload macOS DMG
         if: matrix.os == 'macos-latest'
         shell: bash
-        run: |
-          tag="${GITHUB_REF_NAME}"
-          shopt -s nullglob
-          files=(sheet/release/**/*.dmg)
-          if [ ${#files[@]} -gt 0 ]; then
-            gh release upload "$tag" "${files[@]}" --clobber
-          else
-            echo "No DMG found, skipping upload."
-          fi
+        run: gh release upload "${GITHUB_REF_NAME}" release/**/*.dmg --clobber
 
-      - name: Upload assets (Linux)
+      - name: Upload Linux AppImage
         if: matrix.os == 'ubuntu-latest'
         shell: bash
-        run: |
-          tag="${GITHUB_REF_NAME}"
-          shopt -s nullglob
-          files=(sheet/release/**/*.AppImage)
-          if [ ${#files[@]} -gt 0 ]; then
-            gh release upload "$tag" "${files[@]}" --clobber
-          else
-            echo "No AppImage found, skipping upload."
-          fi
+        run: gh release upload "${GITHUB_REF_NAME}" release/**/*.AppImage --clobber
