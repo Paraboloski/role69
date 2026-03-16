@@ -1,64 +1,103 @@
-import { useState, useEffect, useMemo } from 'react'
-import Navbar from "./components/Navbar"
-import Header from "./components/Header"
-import Stats from "./components/Stats"
-import TS from "./components/TS"
-import Combat from "./components/Combat"
-import Inventory from "./components/Inventory"
-import Actions from "./components/Actions"
-import { init, calcMod, parseBonus } from "./utils"
+import { useEffect, useMemo, useRef, useState } from 'react'
+import Navbar from './components/Navbar'
+import Header from './components/Header'
+import Stats from './components/Stats'
+import SavingThrows from './components/SavingThrows'
+import Combat from './components/Combat'
+import Inventory from './components/Inventory'
+import Actions from './components/Actions'
+import { createInitialCharacterState, calculateModifier, parseSignedNumber } from './utils'
 
 export default function App() {
-  const [data, setData] = useState(init)
+  const [characterData, setCharacterData] = useState(() => createInitialCharacterState())
+  const lastSavedRef = useRef(JSON.stringify(createInitialCharacterState()))
+  const ipcRendererRef = useRef(null)
+  const [isBugModalOpen, setIsBugModalOpen] = useState(false)
+  const [bugReporterName, setBugReporterName] = useState('')
+  const [bugDescription, setBugDescription] = useState('')
 
   useEffect(() => {
-    const saved = localStorage.getItem('dnd_react_sheet')
-    if (saved) {
+    try {
+      const electron = window.require ? window.require('electron') : null
+      ipcRendererRef.current = electron ? electron.ipcRenderer : null
+    } catch {
+      ipcRendererRef.current = null
+    }
+
+    const savedState = localStorage.getItem('dnd_react_sheet')
+    if (savedState) {
       try {
-        setData(JSON.parse(saved))
-      } catch (e) {
-        console.error("Errore nel caricamento dei dati", e)
+        setCharacterData(JSON.parse(savedState))
+        lastSavedRef.current = savedState
+      } catch (error) {
+        console.error('Errore nel caricamento dei dati', error)
       }
     }
   }, [])
 
-  const mods = useMemo(() => {
-    const newMods = {}
-    for (const key in data.stats) {
-      newMods[key] = calcMod(data.stats[key])
+  const statModifiers = useMemo(() => {
+    const modifiers = {}
+    for (const key in characterData.stats) {
+      modifiers[key] = calculateModifier(characterData.stats[key])
     }
-    return newMods
-  }, [data.stats])
+    return modifiers
+  }, [characterData.stats])
 
-  const parsedProfBonus = useMemo(() => parseBonus(data.combat.profBonus), [data.combat.profBonus])
+  const proficiencyBonusValue = useMemo(
+    () => parseSignedNumber(characterData.combat.profBonus),
+    [characterData.combat.profBonus],
+  )
 
-  const updatePath = (section, key, value) => {
-    setData(prev => ({
+  const updateSectionField = (section, key, value) => {
+    setCharacterData((prev) => ({
       ...prev,
       [section]: { ...prev[section], [key]: value }
     }))
   }
 
   const toggleSkill = (skillId) => {
-    setData(prev => ({
+    setCharacterData((prev) => ({
       ...prev,
       skills: { ...prev.skills, [skillId]: !prev.skills[skillId] }
     }))
   }
 
   const handleSave = () => {
-    localStorage.setItem('dnd_react_sheet', JSON.stringify(data))
+    localStorage.setItem('dnd_react_sheet', JSON.stringify(characterData))
+    lastSavedRef.current = JSON.stringify(characterData)
     alert("Scheda salvata con successo! Puoi chiudere l'app.")
   }
 
-  const handleReset = () => {
-    if (window.confirm("Sei sicuro di voler resettare? Perderai tutte le modifiche!")) {
-      localStorage.removeItem('dnd_react_sheet')
-      setData(initialCharacterState)
+  const openBugReport = () => {
+    const title = `Bug report - ${bugReporterName || 'Anonimo'}`
+    const bodyLines = [
+      `Nome: ${bugReporterName || 'Anonimo'}`,
+      '',
+      'Descrizione bug:',
+      bugDescription || '(vuoto)'
+    ]
+    const issueUrl = `https://github.com/Paraboloski/asgaroth_dnd_sheet_apk/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(bodyLines.join('\n'))}`
+
+    try {
+      const electron = window.require ? window.require('electron') : null
+      if (electron?.shell) {
+        electron.shell.openExternal(issueUrl)
+      } else {
+        window.open(issueUrl, '_blank', 'noopener,noreferrer')
+      }
+    } catch {
+      window.open(issueUrl, '_blank', 'noopener,noreferrer')
     }
   }
 
-  const addListItem = (listName) => {
+  useEffect(() => {
+    const hasUnsavedChanges = JSON.stringify(characterData) !== lastSavedRef.current
+    if (ipcRendererRef.current) {
+      ipcRendererRef.current.send('set-unsaved-changes', hasUnsavedChanges)
+    }
+  }, [characterData])
+
+  const addInventoryItem = (listName) => {
     const newItem = { id: Date.now() }
     
     if (listName === 'items') {
@@ -70,7 +109,7 @@ export default function App() {
       newItem.value = "Valore..."
     }
 
-    setData(prev => ({
+    setCharacterData((prev) => ({
       ...prev,
       inventory: {
         ...prev.inventory,
@@ -79,8 +118,8 @@ export default function App() {
     }))
   }
 
-  const removeListItem = (listName, id) => {
-    setData(prev => ({
+  const removeInventoryItem = (listName, id) => {
+    setCharacterData((prev) => ({
       ...prev,
       inventory: {
         ...prev.inventory,
@@ -89,8 +128,8 @@ export default function App() {
     }))
   }
 
-  const updateListItem = (listName, id, field, newValue) => {
-    setData(prev => ({
+  const updateInventoryItem = (listName, id, field, newValue) => {
+    setCharacterData((prev) => ({
       ...prev,
       inventory: {
         ...prev.inventory,
@@ -101,7 +140,7 @@ export default function App() {
     }))
   }
 
-  const addActionRow = (listName) => {
+  const addActionEntry = (listName) => {
     const newRow = { id: Date.now() }
     
     if (listName === 'attacks') {
@@ -117,7 +156,7 @@ export default function App() {
       newRow.description = "Descrizione."
     }
 
-    setData(prev => ({
+    setCharacterData((prev) => ({
       ...prev,
       actions: {
         ...prev.actions,
@@ -126,8 +165,8 @@ export default function App() {
     }))
   }
 
-  const removeActionRow = (listName, id) => {
-    setData(prev => ({
+  const removeActionEntry = (listName, id) => {
+    setCharacterData((prev) => ({
       ...prev,
       actions: {
         ...prev.actions,
@@ -136,8 +175,8 @@ export default function App() {
     }))
   }
 
-  const updateActionRow = (listName, id, field, newValue) => {
-    setData(prev => ({
+  const updateActionEntry = (listName, id, field, newValue) => {
+    setCharacterData((prev) => ({
       ...prev,
       actions: {
         ...prev.actions,
@@ -149,22 +188,81 @@ export default function App() {
   }
 
   return (
-    <>
-      <Navbar onSave={handleSave} onReset={handleReset} />
-      <div className="sheet" id="dynamic-sheet-content">
-        <Header data={data.header} updatePath={updatePath} />
-        <div className="grid-container">
-          <div>
-            <Stats stats={data.stats} mods={mods} updatePath={updatePath} />
-            <TS skillsData={data.skills} mods={mods} profBonus={parsedProfBonus} toggleSkill={toggleSkill} />
-            <Inventory data={data.inventory} addListItem={addListItem} removeListItem={removeListItem} updateListItem={updateListItem} />
-          </div>
-          <div>
-            <Combat data={data.combat} initMod={mods.dex} updatePath={updatePath} />
-            <Actions data={data.actions} addActionRow={addActionRow} removeActionRow={removeActionRow} updateActionRow={updateActionRow} />
+    <div className="app">
+      <Navbar onSave={handleSave} onReportBug={() => setIsBugModalOpen(true)} />
+      {isBugModalOpen && (
+        <div className="modal-backdrop" role="presentation" onClick={() => setIsBugModalOpen(false)}>
+          <div className="modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">Report a bug</h2>
+              <button className="icon-btn icon-btn--remove" onClick={() => setIsBugModalOpen(false)} aria-label="Chiudi">×</button>
+            </div>
+            <div className="modal-body">
+              <label className="modal-label" htmlFor="bug-reporter-name">Nome</label>
+              <input
+                id="bug-reporter-name"
+                className="modal-input"
+                type="text"
+                value={bugReporterName}
+                onChange={(event) => setBugReporterName(event.target.value)}
+              />
+              <label className="modal-label" htmlFor="bug-description">Descrizione bug</label>
+              <textarea
+                id="bug-description"
+                className="modal-textarea"
+                rows={6}
+                value={bugDescription}
+                onChange={(event) => setBugDescription(event.target.value)}
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="btn btn--reset" onClick={() => setIsBugModalOpen(false)}>Annulla</button>
+              <button
+                className="btn btn--save"
+                onClick={() => {
+                  openBugReport()
+                  setIsBugModalOpen(false)
+                }}
+              >
+                Pubblica su GitHub
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </>
+      )}
+      <main className="sheet" id="dynamic-sheet-content">
+        <Header headerData={characterData.header} onFieldChange={updateSectionField} />
+        <div className="sheet-grid">
+          <section className="sheet-column">
+            <Stats stats={characterData.stats} modifiers={statModifiers} onFieldChange={updateSectionField} />
+            <SavingThrows
+              skillsData={characterData.skills}
+              modifiers={statModifiers}
+              proficiencyBonus={proficiencyBonusValue}
+              onToggleSkill={toggleSkill}
+            />
+            <Inventory
+              inventoryData={characterData.inventory}
+              onAddItem={addInventoryItem}
+              onRemoveItem={removeInventoryItem}
+              onUpdateItem={updateInventoryItem}
+            />
+          </section>
+          <section className="sheet-column">
+            <Combat
+              combatData={characterData.combat}
+              initiativeModifier={statModifiers.dex}
+              onFieldChange={updateSectionField}
+            />
+            <Actions
+              actionsData={characterData.actions}
+              onAddRow={addActionEntry}
+              onRemoveRow={removeActionEntry}
+              onUpdateRow={updateActionEntry}
+            />
+          </section>
+        </div>
+      </main>
+    </div>
   )
 }

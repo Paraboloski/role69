@@ -1,69 +1,191 @@
 import Editable from './Editable'
-import { numFormat } from '../utils.js'
-export default function Combat({ data, initMod, updatePath }) {
-    return (
-        <>
-            <div className="combat-stats">
-                <div className="combat-box">
-                    <Editable className="val" tagName="div" value={data.ac} onChange={(val) => updatePath('combat', 'ac', val)} />
-                    <div className="label">Classe Armatura</div>
-                </div>
-                <div className="combat-box">
-                    <div className="val" id="initiative-val">{numFormat(initMod)}</div>
-                    <div className="label">Iniziativa</div>
-                </div>
-                <div className="combat-box">
-                    <Editable className="val" tagName="div" value={data.speed} onChange={(val) => updatePath('combat', 'speed', val)} />
-                    <div className="label">Velocità</div>
-                </div>
-                <div className="combat-box" style={{ borderColor: '#c53131' }}>
-                    <Editable
-                        className="val"
-                        style={{ color: '#c53131' }}
-                        tagName="div"
-                        value={data.hp}
-                        onChange={(val) => updatePath('combat', 'hp', val)}
-                    />
-                    <div className="label">Punti Ferita</div>
-                </div>
-            </div>
+import { formatSignedNumber } from '../utils.js'
 
-            <div className="combat-stats">
-                <div className="combat-box">
-                    <Editable className="val" tagName="div" value={data.honor} onChange={(val) => updatePath('combat', 'honor', val)} />
-                    <div className="label">Onore</div>
-                </div>
-                <div className="combat-box">
-                    <Editable className="val" tagName="div" value={data.sanity} onChange={(val) => updatePath('combat', 'sanity', val)} />
-                    <div className="label">Sanità Mentale</div>
-                </div>
-                <div className="combat-box">
-                    <Editable className="val" tagName="div" value={data.occult} onChange={(val) => updatePath('combat', 'occult', val)} />
-                    <div className="label">Percezione occulta</div>
-                </div>
-                <div className="combat-box">
-                    <Editable className="val" tagName="div" value={data.passive} onChange={(val) => updatePath('combat', 'passive', val)} />
-                    <div className="label">Percezione passiva</div>
-                </div>
-            </div>
+export default function Combat({ combatData, initiativeModifier, onFieldChange }) {
+  const sanitizeSignedNumber = (value) => {
+    const match = value.match(/[+-]?\d+/)
+    if (!match) return ''
+    const parsedNumber = parseInt(match[0], 10)
+    const clamped = Math.min(Math.abs(parsedNumber), 999)
+    return parsedNumber >= 0 ? `+${clamped}` : `-${clamped}`
+  }
 
-            <div className="combat-stats">
-                <div className="combat-box" style={{ borderColor: '#c53131' }}>
-                    <Editable
-                        className="val"
-                        id="prof-bonus-val"
-                        style={{ color: '#c53131' }}
-                        tagName="div"
-                        value={data.profBonus}
-                        onChange={(val) => updatePath('combat', 'profBonus', val)}
-                    />
-                    <div className="label" style={{ color: '#c53131', fontWeight: 'bold' }}>Bonus Competenza</div>
-                </div>
-                <div className="combat-box">
-                    <Editable className="val" tagName="div" value={data.heroPoints} onChange={(val) => updatePath('combat', 'heroPoints', val)} />
-                    <div className="label">Punti Eroe</div>
-                </div>
-            </div>
-        </>
-    )
+  const sanitizeUnsignedNumber = (value) => {
+    const match = value.match(/\d+/)
+    if (!match) return ''
+    const number = Math.min(parseInt(match[0], 10), 999)
+    return `${number}`
+  }
+
+  const clampCurrentHitPoints = (currentValue, maxValue) => {
+    const current = currentValue ? parseInt(currentValue, 10) : 0
+    const max = maxValue ? parseInt(maxValue, 10) : 0
+    if (!maxValue) return currentValue
+    return `${Math.min(current, max, 999)}`
+  }
+
+  return (
+    <section className="combat-section">
+      <div className="combat-grid">
+        <div className="combat-card">
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.ac}
+            defaultValue="10"
+            sanitize={sanitizeUnsignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'ac', val)}
+          />
+          <div className="combat-label">Classe Armatura (CA)</div>
+        </div>
+        <div className="combat-card">
+          <div className="combat-value" id="initiative-val">{formatSignedNumber(initiativeModifier)}</div>
+          <div className="combat-label">Iniziativa</div>
+        </div>
+        <div className="combat-card">
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.speed}
+            defaultValue="9m"
+            onChange={(val) => onFieldChange('combat', 'speed', val)}
+          />
+          <div className="combat-label">Velocità</div>
+        </div>
+        <div className="combat-card combat-card--highlight hp-card">
+          <div className="hp-row">
+            <div className="combat-label">PF Massimi</div>
+          <Editable
+            className="combat-value combat-value--highlight"
+            tagName="div"
+            value={combatData.maxHitPoints}
+            defaultValue="0"
+            sanitize={sanitizeUnsignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => {
+              onFieldChange('combat', 'maxHitPoints', val)
+              const clampedCurrent = clampCurrentHitPoints(combatData.currentHitPoints, val)
+              if (clampedCurrent !== combatData.currentHitPoints) {
+                onFieldChange('combat', 'currentHitPoints', clampedCurrent)
+              }
+            }}
+          />
+          </div>
+          <div className="hp-row">
+            <div className="combat-label">PF Attuali</div>
+          <Editable
+            className="combat-value combat-value--highlight"
+            tagName="div"
+            value={combatData.currentHitPoints}
+            defaultValue="0"
+            sanitize={(val) => clampCurrentHitPoints(sanitizeUnsignedNumber(val), combatData.maxHitPoints)}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'currentHitPoints', clampCurrentHitPoints(val, combatData.maxHitPoints))}
+          />
+          </div>
+          <div className="hp-row">
+            <div className="combat-label">PF Temporanei</div>
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.temporaryHitPoints}
+            defaultValue="0"
+            sanitize={sanitizeUnsignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'temporaryHitPoints', val)}
+          />
+          </div>
+        </div>
+      </div>
+
+      <div className="combat-grid">
+        <div className="combat-card">
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.honor}
+            defaultValue="+0"
+            sanitize={sanitizeSignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'honor', val)}
+          />
+          <div className="combat-label">Onore</div>
+        </div>
+        <div className="combat-card">
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.sanity}
+            defaultValue="+0"
+            sanitize={sanitizeSignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'sanity', val)}
+          />
+          <div className="combat-label">Sanità Mentale</div>
+        </div>
+        <div className="combat-card">
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.occult}
+            defaultValue="+0"
+            sanitize={sanitizeSignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'occult', val)}
+          />
+          <div className="combat-label">Percezione occulta</div>
+        </div>
+        <div className="combat-card">
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.passive}
+            defaultValue="10"
+            sanitize={sanitizeUnsignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'passive', val)}
+          />
+          <div className="combat-label">Percezione passiva</div>
+        </div>
+      </div>
+
+      <div className="combat-grid">
+        <div className="combat-card combat-card--highlight">
+          <Editable
+            className="combat-value combat-value--highlight"
+            tagName="div"
+            value={combatData.profBonus}
+            defaultValue="+0"
+            sanitize={sanitizeSignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'profBonus', val)}
+          />
+          <div className="combat-label combat-label--highlight">Bonus Competenza</div>
+        </div>
+        <div className="combat-card">
+          <Editable
+            className="combat-value"
+            tagName="div"
+            value={combatData.heroPoints}
+            defaultValue="0"
+            sanitize={sanitizeUnsignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('combat', 'heroPoints', val)}
+          />
+          <div className="combat-label">Punti Eroe</div>
+        </div>
+      </div>
+    </section>
+  )
 }

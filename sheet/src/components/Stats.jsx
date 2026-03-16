@@ -1,28 +1,37 @@
-import Editable from './Editable';
-import { numFormat } from '../utils';
+import Editable from './Editable'
+import { formatSignedNumber } from '../utils'
 
-const STAT_NAMES = [
-    { key: 'str', label: 'FOR' }, { key: 'dex', label: 'DES' }, { key: 'con', label: 'COS' },
-    { key: 'int', label: 'INT' }, { key: 'wis', label: 'SAG' }, { key: 'cha', label: 'CAR' }
-];
+const STAT_DEFINITIONS = [
+  { key: 'str', label: 'FOR' }, { key: 'dex', label: 'DES' }, { key: 'con', label: 'COS' },
+  { key: 'int', label: 'INT' }, { key: 'wis', label: 'SAG' }, { key: 'cha', label: 'CAR' }
+]
 
-export default function Stats({ stats, mods, updatePath }) {
-    return (
-        <>
-            <div className="abilities">
-                {STAT_NAMES.map(({ key, label }) => (
-                    <div className="ability-box" key={key}>
-                        <div className="ability-name">{label}</div>
-                        <div className="ability-mod">{numFormat(mods[key])}</div>
-                        <Editable
-                            className="ability-score input-score"
-                            tagName="div"
-                            value={stats[key]}
-                            onChange={(val) => updatePath('stats', key, val)}
-                        />
-                    </div>
-                ))}
-            </div>
-        </>
-    );
-};
+export default function Stats({ stats, modifiers, onFieldChange }) {
+  const sanitizeUnsignedNumber = (value) => {
+    const match = value.match(/\d+/)
+    if (!match) return ''
+    const number = Math.min(parseInt(match[0], 10), 999)
+    return `${number}`
+  }
+
+  return (
+    <div className="ability-grid">
+      {STAT_DEFINITIONS.map(({ key, label }) => (
+        <div className="ability-card" key={key}>
+          <div className="ability-name">{label}</div>
+          <div className="ability-mod">{formatSignedNumber(modifiers[key])}</div>
+          <Editable
+            className="ability-score"
+            tagName="div"
+            value={stats[key]}
+            defaultValue="10"
+            sanitize={sanitizeUnsignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('stats', key, val)}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}

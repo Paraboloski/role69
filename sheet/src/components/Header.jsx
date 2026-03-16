@@ -1,27 +1,42 @@
 import Editable from './Editable'
-export default function Header({ data, updatePath }) {
-    return (
-        <>
-            <div className="header">
-                <div>
-                    <h1><Editable value={data.name} onChange={(val) => updatePath('header', 'name', val)} /></h1>
-                    <div className="sub-info">
-                        <Editable value={data.class1} onChange={(val) => updatePath('header', 'class1', val)} /> |{' '}
-                        <Editable value={data.class2} onChange={(val) => updatePath('header', 'class2', val)} /> |{' '}
-                        <Editable value={data.race} onChange={(val) => updatePath('header', 'race', val)} /> |{' '}
-                        <Editable value={data.background} onChange={(val) => updatePath('header', 'background', val)} /> |{' '}
-                        <Editable value={data.alignment} onChange={(val) => updatePath('header', 'alignment', val)} />
-                    </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-                        Livello <Editable value={data.level} onChange={(val) => updatePath('header', 'level', val)} />
-                    </div>
-                    <div className="sub-info">
-                        Giocatore: <Editable value={data.player} onChange={(val) => updatePath('header', 'player', val)} />
-                    </div>
-                </div>
-            </div>
-        </>
-    )
+export default function Header({ headerData, onFieldChange }) {
+  const sanitizeUnsignedNumber = (value) => {
+    const match = value.match(/\d+/)
+    if (!match) return ''
+    const number = Math.min(parseInt(match[0], 10), 999)
+    return `${number}`
+  }
+
+  return (
+    <header className="sheet-header">
+      <div>
+        <h1 className="sheet-title">
+          <Editable value={headerData.name} defaultValue="Nome Personaggio" onChange={(val) => onFieldChange('header', 'name', val)} />
+        </h1>
+        <div className="sheet-subtitle">
+          <Editable value={headerData.class1} defaultValue="Classe 1" onChange={(val) => onFieldChange('header', 'class1', val)} /> |{' '}
+          <Editable value={headerData.class2} defaultValue="Classe 2" onChange={(val) => onFieldChange('header', 'class2', val)} /> |{' '}
+          <Editable value={headerData.race} defaultValue="Razza" onChange={(val) => onFieldChange('header', 'race', val)} /> |{' '}
+          <Editable value={headerData.background} defaultValue="Background" onChange={(val) => onFieldChange('header', 'background', val)} /> |{' '}
+          <Editable value={headerData.alignment} defaultValue="Allineamento" onChange={(val) => onFieldChange('header', 'alignment', val)} />
+        </div>
+      </div>
+      <div className="sheet-meta">
+        <div className="sheet-level">
+          Livello{' '}
+          <Editable
+            value={headerData.level}
+            defaultValue="1"
+            sanitize={sanitizeUnsignedNumber}
+            inputMode="numeric"
+            updateOnInput={false}
+            onChange={(val) => onFieldChange('header', 'level', val)}
+          />
+        </div>
+        <div className="sheet-subtitle">
+          Giocatore: <Editable value={headerData.player} defaultValue="Tuo Nome" onChange={(val) => onFieldChange('header', 'player', val)} />
+        </div>
+      </div>
+    </header>
+  )
 }
