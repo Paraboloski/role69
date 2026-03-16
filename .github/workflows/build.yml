@@ -51,8 +51,41 @@ jobs:
             done <<< "$assets"
           fi
 
-      - name: Upload assets
+      - name: Upload assets (Windows)
+        if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           tag="${GITHUB_REF_NAME}"
-          gh release upload "$tag" sheet/release/**/*Setup*.exe sheet/release/**/*.dmg sheet/release/**/*.AppImage --clobber
+          shopt -s nullglob
+          files=(sheet/release/**/*Setup*.exe)
+          if [ ${#files[@]} -gt 0 ]; then
+            gh release upload "$tag" "${files[@]}" --clobber
+          else
+            echo "No Windows setup exe found, skipping upload."
+          fi
+
+      - name: Upload assets (macOS)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          shopt -s nullglob
+          files=(sheet/release/**/*.dmg)
+          if [ ${#files[@]} -gt 0 ]; then
+            gh release upload "$tag" "${files[@]}" --clobber
+          else
+            echo "No DMG found, skipping upload."
+          fi
+
+      - name: Upload assets (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          shopt -s nullglob
+          files=(sheet/release/**/*.AppImage)
+          if [ ${#files[@]} -gt 0 ]; then
+            gh release upload "$tag" "${files[@]}" --clobber
+          else
+            echo "No AppImage found, skipping upload."
+          fi
