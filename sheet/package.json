@@ -24,6 +24,12 @@
       "dist/**",
       "src/main.cjs"
     ],
+    "extraResources": [
+      {
+        "from": "dist",
+        "to": "dist"
+      }
+    ],
     "publish": [
       {
         "provider": "github",

@@ -31,6 +31,7 @@ function createWindow() {
     const candidates = [
       path.join(asarPath, 'dist', 'index.html'),
       path.join(asarPath, 'index.html'),
+      path.join(process.resourcesPath, 'dist', 'index.html'),
     ];
     const indexPath = candidates.find((candidate) => fs.existsSync(candidate));
     if (indexPath) {
