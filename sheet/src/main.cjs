@@ -25,7 +25,9 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools(); 
   } else {
-    const indexPath = path.join(process.resourcesPath, 'app.asar', 'dist', 'index.html');
+    const appPath = app.getAppPath();
+    const asarPath = appPath.endsWith('.asar') ? appPath : path.join(process.resourcesPath, 'app.asar');
+    const indexPath = path.join(asarPath, 'dist', 'index.html');
     mainWindow.loadFile(indexPath);
   }
 
