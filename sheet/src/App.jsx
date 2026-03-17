@@ -71,12 +71,17 @@ export default function App() {
   }
 
   const handleSave = async () => {
-    const success = await saveCharacterState(characterData)
-    if (success) {
-      lastSavedRef.current = serializedState
-      window.ipcRenderer.send('set-unsaved-changes', false);
-      alert("Scheda salvata con successo! Puoi chiudere l'app.")
-      return
+    try {
+      const success = await saveCharacterState(characterData)
+      if (success) {
+        lastSavedRef.current = serializedState
+        notifyUnsavedChanges(false) 
+        alert("Scheda salvata con successo! Puoi chiudere l'app.")
+      } else {
+        alert("Errore: Impossibile salvare la scheda. Controlla il processo principale di Electron.")
+      }
+    } catch (error) {
+      alert("Si è verificato un errore imprevisto durante il salvataggio.")
     }
   }
 
