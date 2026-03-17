@@ -16,10 +16,8 @@
     --color-neutral-dark: #333;
     --color-bug: #6b6b6b;
     --color-bug-dark: #4f4f4f;
-    --color-export: #3b6c9a;
-    --color-export-dark: #2c5376;
-    --color-import: #7a6a2b;
-    --color-import-dark: #5d5121;
+    --color-impex: #3b6c9a;
+    --color-impex-dark: #2c5376;
     --color-add: #4CAF50;
     --color-add-dark: #45a049;
     --color-remove: #ff4d4d;
@@ -375,19 +373,19 @@ body {
 }
 
 .btn--export {
-    background-color: var(--color-export);
+    background-color: var(--color-impex);
 }
 
 .btn--export:hover {
-    background-color: var(--color-export-dark);
+    background-color: var(--color-impex-dark);
 }
 
 .btn--import {
-    background-color: var(--color-import);
+    background-color: var(--color-impex);
 }
 
 .btn--import:hover {
-    background-color: var(--color-import-dark);
+    background-color: var(--color-impex-dark);
 }
 
 .btn--reset {
