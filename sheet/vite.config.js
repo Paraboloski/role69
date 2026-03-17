@@ -10,9 +10,9 @@ export default defineConfig({
       manifest: {
         name: 'Asgaroth D&D Sheet',
         short_name: 'Scheda D&D',
-        description: '',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        description: 'Scheda personaggio per D&D 5e',
+        theme_color: '#121212', 
+        background_color: '#f3f2f1',
         display: 'standalone', 
         icons: [
           {
@@ -25,5 +25,5 @@ export default defineConfig({
       }
     })
   ],
-  base: './', 
+  base: '/asgaroth_dnd_sheet_apk/',
 })
