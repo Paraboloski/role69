@@ -25,8 +25,16 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools(); 
   } else {
-    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+    const indexPath = path.join(app.getAppPath(), 'dist', 'index.html');
+    mainWindow.loadFile(indexPath);
   }
+
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+    dialog.showErrorBox(
+      'Errore di caricamento',
+      `Impossibile caricare l'app.\n${errorDescription}\nURL: ${validatedURL}`
+    );
+  });
 
   mainWindow.maximize();
 
