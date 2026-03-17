@@ -39,6 +39,9 @@ jobs:
       
       - run: npm install --legacy-peer-deps
       
+      - name: Build React App
+        run: npm run build
+
       - name: Compile
         run: npx electron-builder --publish never
       
