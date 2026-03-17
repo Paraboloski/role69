@@ -45,7 +45,7 @@ Se preferisci un'applicazione standalone per il tuo computer:
 
 ---
 
-## 👨Sviluppo
+## Sviluppo
 
 L'applicazione è sviluppata con **React + Vite** e **Electron**. 
 Se vuoi contribuire o compilare il codice localmente:
