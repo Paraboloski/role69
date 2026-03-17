@@ -17,6 +17,13 @@
   },
   "build": {
     "productName": "Scheda D&D",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "src/main.cjs"
+    ],
     "publish": [
       {
         "provider": "github",
