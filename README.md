@@ -1,43 +1,61 @@
 # Asgaroth D&D Character Sheet
 
-Applicazione desktop standalone per la gestione della scheda del personaggio di Dungeons & Dragons 5e. Progettata per essere rapida, parzialmente automatizzata e utilizzabile completamente offline.
+Una soluzione leggera per la gestione della scheda personaggio di D&D 5e. Progettata per essere rapida, parzialmente automatizzata e utilizzabile ovunque: **Desktop e Mobile.**
 
-## Cosa offre
+---
 
-- Scheda personaggio completa e ordinata
-- Modifiche rapide con campi editabili
-- Calcoli base (modificatori, bonus competenza, tiri salvezza)
-- Gestione inventario e attacchi
-- Salvataggio locale automatico
+## Caratteristiche principali
 
-## Come scaricarla
+-  **Multi-piattaforma:** Usala nel browser, installala come App sul telefono o scarica la versione Desktop.
+-  **Salvaggio Locale:** I dati rimangono sul tuo dispositivo (Database SQLite per Desktop / LocalStorage per Web).
+- **Automazione Intelligente:** Calcolo automatico di modificatori, bonus competenza e tiri salvezza.
+- **Offline First:** Una volta caricata o installata, funziona senza connessione internet.
+- **Print Ready:** Layout ottimizzato per la stampa della scheda in formato A4.
 
-1. Vai nella sezione **Releases** del repository.
-2. Scarica il file giusto per il tuo sistema:
-   - **Windows**: `*Setup*.exe`
+---
+
+## Installazione Mobile 
+
+Non serve passare dagli store! 
+1. Apri [il link dell'app](https://paraboloski.github.io/asgaroth_dnd_sheet_apk/) dal browser del tuo smartphone (Chrome su Android o Safari su iOS).
+2. Clicca su **"Aggiungi a schermata Home"** (o l'icona "Installa App").
+3. La troverai direttamente tra le tue applicazioni.
+
+---
+
+## Download Desktop (Windows, macOS, Linux)
+
+Se preferisci un'applicazione standalone per il tuo computer:
+
+1. Vai nella sezione **[Releases](https://github.com/Paraboloski/asgaroth_dnd_sheet_apk/releases)**.
+2. Scarica il file adatto al tuo sistema operativo:
+   - **Windows**: `*.exe` (Installer)
    - **macOS**: `.dmg`
    - **Linux**: `.AppImage`
-3. Avvia il file scaricato e segui l’installazione.
+3. Installa e avvia.
 
-## Avvio
+---
 
-Una volta installata, apri l’app dal menu applicazioni. Non serve connessione internet per usarla.
+##  Guida Rapida
 
-## Guida rapida
+- **Modifica:** Clicca su qualsiasi campo di testo per aggiornare i valori.
+- **Salvataggio:** Usa il tasto **Salva** nella toolbar in alto per rendere permanenti le modifiche.
+- **Import/Export:** Puoi esportare la tua scheda in un file `.json` per trasferirla da un dispositivo all'altro.
+- **Bug Report:** Qualcosa non va? Usa il tasto **Report a bug** per aprire direttamente una segnalazione su GitHub.
 
-1. Compila i campi della scheda cliccando sul testo.
-2. Salva con il pulsante **Salva** in alto.
-3. Alla riapertura, la scheda viene ripristinata automaticamente.
+---
 
-## Salvataggi
+## 👨Sviluppo
 
-Il salvataggio è locale sul dispositivo. Non vengono creati file esterni né inviati dati online.
+L'applicazione è sviluppata con **React + Vite** e **Electron**. 
+Se vuoi contribuire o compilare il codice localmente:
 
-## Report bug
+```bash
+# Installa le dipendenze
+npm install
 
-Usa il pulsante **Report a bug** nella barra in alto: si aprirà una nuova issue su GitHub con titolo e descrizione precompilati.
+# Avvia in modalità sviluppo (Web)
+npm run dev
 
-## Requisiti
-
-- Windows 10+ / macOS 12+ / Linux moderno
-- Nessuna dipendenza aggiuntiva
+# Avvia in modalità sviluppo (Electron)
+npm run electron:dev
