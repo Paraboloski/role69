@@ -29,7 +29,7 @@ export const BASE_ACTION_STATUSES = [
   },
   {
     "id": "status-incosciente",
-    "name": "Incosciente/Paralizzato/Stordito",
+    "name": "Paralizzato",
     "description": "Incapace di agire. Fallisci sempre TS Forza/Destrezza. TPC subiti sempre con vantaggio.",
     "active": false,
     "custom": false
