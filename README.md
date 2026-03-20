@@ -17,7 +17,7 @@ Una soluzione leggera e standalone per la gestione della scheda personaggio di D
 ## Installazione Mobile 
 
 Non serve passare dagli store! 
-1. Apri [il link dell'app](https://paraboloski.github.io/asgaroth_dnd_sheet_apk/) dal browser del tuo smartphone (Chrome su Android o Safari su iOS).
+1. Apri [il link dell'app](https://paraboloski.github.io/role69/) dal browser del tuo smartphone (Chrome su Android o Safari su iOS).
 2. Clicca su **"Aggiungi a schermata Home"** (o l'icona "Installa App").
 3. La troverai direttamente tra le tue applicazioni.
 
@@ -27,7 +27,7 @@ Non serve passare dagli store!
 
 Se preferisci un'applicazione standalone per il tuo computer:
 
-1. Vai nella sezione **[Releases](https://github.com/Paraboloski/asgaroth_dnd_sheet_apk/releases)**.
+1. Vai nella sezione **[Releases](https://github.com/Paraboloski/role69/releases)**.
 2. Scarica il file adatto al tuo sistema operativo:
    - **Windows**: `*.exe` (Installer)
    - **macOS**: `.dmg`

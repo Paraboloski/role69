@@ -206,7 +206,7 @@ export default function App() {
       'Descrizione bug:',
       bugDescription || '(vuoto)'
     ]
-    const issueUrl = `https://github.com/Paraboloski/asgaroth_dnd_sheet_apk/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(bodyLines.join('\n'))}`
+    const issueUrl = `https://github.com/Paraboloski/role69/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(bodyLines.join('\n'))}`
 
     try {
       const electron = window.require ? window.require('electron') : null

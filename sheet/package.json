@@ -6,7 +6,7 @@
   "type": "module",
   "main": "src/main.cjs",
   "author": "Paraboloski",
-  "repository": "https://github.com/Paraboloski/asgaroth_dnd_sheet_apk.git",
+  "repository": "https://github.com/Paraboloski/role69.git",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
