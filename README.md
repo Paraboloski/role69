@@ -32,7 +32,7 @@ Funzionamento dell'applicativo garantito anche offline.
 
 Se vuoi usare l'app come programma desktop:
 
-1. vai nella pagina delle [release](`https://github.com/Paraboloski/role69/releases`):
+1. vai nella pagina delle [release](https://github.com/Paraboloski/role69/releases):
 
 
 2. scarica il file adatto al tuo sistema operativo:
@@ -45,7 +45,7 @@ Se vuoi usare l'app come programma desktop:
 
 ## Come usarla da browser/mobile
 
-Versione [web pubblicata](`https://paraboloski.github.io/role69/`):
+Versione [web pubblicata](https://paraboloski.github.io/role69/):
 
 ### Browser
 
