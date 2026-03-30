@@ -782,16 +782,22 @@
 
   .mobile-app .profile-upload-trigger,
   .mobile-app .profile-upload-trigger--static {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     width: 144px;
     height: 144px;
     align-self: center !important;
     justify-self: center !important;
     margin: 0 auto 6px !important;
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .mobile-app .sheet-header-identity .profile-upload-trigger,
@@ -812,6 +818,26 @@
   .mobile-app .profile-upload-overlay svg {
     width: 52px;
     height: 52px;
+  }
+
+  .mobile-app .profile-image,
+  .mobile-app .profile-image--placeholder {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: inherit;
+  }
+
+  .mobile-app .profile-image {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .mobile-app .profile-image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
 
   .mobile-app .profile-upload-overlay {
